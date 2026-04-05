@@ -11,9 +11,9 @@ erDiagram
     BUS {
         string busId PK "Unique bus identifier"
         string registrationNo "Vehicle registration number"
-        string type "AC Deluxe | Super Deluxe | Ordinary | Standard Non-AC"
-        int capacity "Seating capacity (default: 50)"
-        string status "active | inactive | maintenance"
+        string type "AC Deluxe, Super Deluxe, Ordinary, Standard Non-AC"
+        int capacity "Seating capacity - default 50"
+        string status "active, inactive, maintenance"
         date lastSeen "Last heartbeat timestamp"
         date createdAt "Record creation time"
         date updatedAt "Last update time"
@@ -23,7 +23,7 @@ erDiagram
         string routeId PK "Unique route identifier"
         string name "Route display name"
         float farePerKm "Fare rate per kilometer"
-        string status "active | inactive"
+        string status "active, inactive"
         date createdAt "Record creation time"
     }
 
@@ -39,7 +39,7 @@ erDiagram
         string name "Full name"
         string phone "Contact phone number"
         string licenseNo "Driving license number"
-        string status "active | inactive | on_leave"
+        string status "active, inactive, on_leave"
         string currentBusId FK "Currently assigned bus"
         date createdAt "Record creation time"
         date updatedAt "Last update time"
@@ -50,7 +50,7 @@ erDiagram
         string name "Full name"
         string phone "Contact phone number"
         string licenseNo "License number"
-        string status "active | inactive | on_leave"
+        string status "active, inactive, on_leave"
         string currentBusId FK "Currently assigned bus"
         date createdAt "Record creation time"
         date updatedAt "Last update time"
@@ -68,7 +68,7 @@ erDiagram
         date actualEndTime "Actual arrival"
         float startOdometerKm "Start odometer reading"
         float endOdometerKm "End odometer reading"
-        string status "active | completed | cancelled"
+        string status "active, completed, cancelled"
         date createdAt "Record creation time"
     }
 
@@ -83,9 +83,9 @@ erDiagram
         string destinationStop "Destination stop name"
         float distanceKm "Travel distance"
         float fareAmount "Fare charged"
-        string currency "Currency code (INR)"
-        string passengerType "adult | student | senior | pass"
-        string paymentMode "cash | card | upi | pass"
+        string currency "Currency code INR"
+        string passengerType "adult, student, senior, pass"
+        string paymentMode "cash, card, upi, pass"
         string seatNo "Allocated seat number"
         float currentLat "Issue location latitude"
         float currentLng "Issue location longitude"
@@ -104,7 +104,7 @@ erDiagram
         float bearingDeg "Travel direction"
         float odometerKm "Odometer reading"
         float batteryPct "Device battery level"
-        string networkType "2G | 3G | 4G | 5G | WiFi"
+        string networkType "2G, 3G, 4G, 5G, WiFi"
         float networkSignalDbm "Signal strength"
         date createdAt "Record creation time"
     }
@@ -113,7 +113,7 @@ erDiagram
         string deviceId PK "Unique device identifier"
         string apiKey "Authentication API key"
         string busId FK "Assigned bus"
-        string status "active | inactive"
+        string status "active, inactive"
         date createdAt "Record creation time"
         date lastSeen "Last heartbeat received"
     }
@@ -122,7 +122,7 @@ erDiagram
         string email PK "Login email address"
         string password "Hashed password"
         string name "Full name"
-        string role "admin | super_admin | viewer"
+        string role "admin, super_admin, viewer"
         boolean isActive "Account active status"
         date createdAt "Record creation time"
         date updatedAt "Last update time"
@@ -145,13 +145,13 @@ erDiagram
         string destinationStop "Destination stop"
         date journeyDate "Date of travel"
         int passengerCount "Number of passengers"
-        string passengerType "adult | child | senior"
+        string passengerType "adult, child, senior"
         float fareAmount "Total fare"
-        string currency "Currency code (INR)"
-        string paymentStatus "pending | paid | refunded"
-        string paymentMode "upi | card | wallet"
+        string currency "Currency code INR"
+        string paymentStatus "pending, paid, refunded"
+        string paymentMode "upi, card, wallet"
         string transactionId "Payment transaction ID"
-        string status "confirmed | cancelled | completed | expired"
+        string status "confirmed, cancelled, completed, expired"
         string qrCode "Base64 QR image"
         string qrData "QR payload JSON"
         date createdAt "Booking creation time"
@@ -159,7 +159,7 @@ erDiagram
     }
 
     BUS_CAPACITY {
-        string busId PK-FK "Bus reference"
+        string busId PK "Bus reference"
         int capacity "Current capacity"
         date createdAt "Record creation time"
         date updatedAt "Last update time"
@@ -181,7 +181,7 @@ erDiagram
         string userId FK "Querying user"
         string audioUrl "Audio file URL"
         float audioDuration "Audio length in seconds"
-        string language "Query language (pa/en/hi)"
+        string language "Query language pa-en-hi"
         string transcription "Speech-to-text output"
         string translatedText "Translated query text"
         string queryType "Type of query"
@@ -189,7 +189,7 @@ erDiagram
         string responseText "Response text"
         string responseAudioUrl "Response audio URL"
         string responseLang "Response language"
-        string status "pending | processing | completed | failed"
+        string status "pending, processing, completed, failed"
         float processingTime "Processing duration ms"
         string deviceInfo "Client device info"
         float lat "Query location latitude"
@@ -200,32 +200,32 @@ erDiagram
 
     %% ========== RELATIONSHIPS ==========
 
-    ROUTE ||--|{ STOP : "contains (1:M)"
-    BUS ||--o{ TRIP : "operates (1:M)"
-    ROUTE ||--o{ TRIP : "served by (1:M)"
-    DRIVER ||--o{ TRIP : "drives (1:M)"
-    CONDUCTOR ||--o{ TRIP : "conducts (1:M)"
-    DEVICE ||--o{ TRIP : "records (1:M)"
+    ROUTE ||--|{ STOP : "contains"
+    BUS ||--o{ TRIP : "operates"
+    ROUTE ||--o{ TRIP : "served-by"
+    DRIVER ||--o{ TRIP : "drives"
+    CONDUCTOR ||--o{ TRIP : "conducts"
+    DEVICE ||--o{ TRIP : "records"
 
-    TRIP ||--o{ TICKET : "generates (1:M)"
-    BUS ||--o{ TICKET : "issued on (1:M)"
-    ROUTE ||--o{ TICKET : "for route (1:M)"
+    TRIP ||--o{ TICKET : "generates"
+    BUS ||--o{ TICKET : "issued-on"
+    ROUTE ||--o{ TICKET : "for-route"
 
-    BUS ||--o{ HEARTBEAT : "transmits (1:M)"
-    DEVICE ||--o{ HEARTBEAT : "sends (1:M)"
+    BUS ||--o{ HEARTBEAT : "transmits"
+    DEVICE ||--o{ HEARTBEAT : "sends"
 
-    DEVICE ||--o| BUS : "installed on (M:1)"
-    DRIVER ||--o| BUS : "assigned to (M:1)"
-    CONDUCTOR ||--o| BUS : "assigned to (M:1)"
+    DEVICE ||--o| BUS : "installed-on"
+    DRIVER ||--o| BUS : "assigned-to"
+    CONDUCTOR ||--o| BUS : "assigned-to"
 
-    BUS ||--|| BUS_CAPACITY : "has capacity (1:1)"
+    BUS ||--|| BUS_CAPACITY : "has-capacity"
 
-    APP_USER ||--o{ USER_BOOKING : "creates (1:M)"
-    ROUTE ||--o{ USER_BOOKING : "booked for (1:M)"
+    APP_USER ||--o{ USER_BOOKING : "creates"
+    ROUTE ||--o{ USER_BOOKING : "booked-for"
 
-    DEVICE ||--o{ OFFLINE_BATCH : "uploads (1:M)"
+    DEVICE ||--o{ OFFLINE_BATCH : "uploads"
 
-    APP_USER ||--o{ VOICE_QUERY : "submits (1:M)"
+    APP_USER ||--o{ VOICE_QUERY : "submits"
 ```
 
 ---
