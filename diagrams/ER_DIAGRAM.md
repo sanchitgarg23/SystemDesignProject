@@ -13,12 +13,16 @@ erDiagram
         string registrationNo
         string type
         string status
+        int capacity
+        string driverId
     }
 
     ROUTE {
         string routeId PK
         string name
         float farePerKm
+        string startPoint
+        string endPoint
     }
 
     TRIP {
@@ -26,12 +30,15 @@ erDiagram
         string busId FK
         string routeId FK
         string status
+        date startTime
+        date endTime
     }
 
     USER {
         string userId PK
         string mobile
         string name
+        string email
     }
 
     BOOKING {
@@ -39,6 +46,8 @@ erDiagram
         string userId FK
         string tripId FK
         string status
+        string seatNumber
+        string paymentStatus
     }
 
     %% ========== CORE RELATIONSHIPS ==========
