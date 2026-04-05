@@ -386,11 +386,11 @@ Detailed documentation is available in the following locations:
 
 | Name             | Role                     | Responsibility                    |
 |------------------|--------------------------|-----------------------------------|
-| Team Member 1    | Full-Stack Developer     | Backend API, Database Design      |
-| Team Member 2    | Frontend Developer       | Admin Portal UI, Charts           |
-| Team Member 3    | Backend Developer        | Authentication, Services          |
-| Team Member 4    | QA / Documentation       | Testing, Documentation, Diagrams  |
-| Team Member 5    | DevOps / Integration     | Deployment, API Integration       |
+| Sanchit Garg     | Full-Stack Developer     | Backend API, Database Design      |
+| Tanish Garg      | Frontend Developer       | Admin Portal UI, Charts           |
+| Omkar Shukla     | Backend Developer        | Authentication, Services          |
+| Chinmay Soni     | QA / Documentation       | Testing, Documentation, Diagrams  |
+| Raghav Gupta     | DevOps / Integration     | Deployment, API Integration       |
 
 ---
 

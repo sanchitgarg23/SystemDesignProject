@@ -43,22 +43,22 @@ We employed an **Agile/Iterative Methodology**.
 
 This repository represents the hard work of a 5-member team. The deliverables have been distributed directly reflecting the codebase:
 
-### Person 1: System Overview & Life Cycle (Name: [Insert Name])
+### Person 1: System Overview & Life Cycle (Name: Chinmay Soni)
 - **Role**: Responsible for `README.md` and `docs/SDLC_Breakdown.md`.
 - **Suggested Commit Message**: `docs: add comprehensive project overview and agile SDLC phase breakdown`
 
-### Person 2: Component Architecture & OOP (Name: [Insert Name])
+### Person 2: Component Architecture & OOP (Name: Tanish Garg)
 - **Role**: Documented the code component logic, creating `diagrams/Class_Diagram.md` mapping encapsulated API entities to frontend React logic.
 - **Suggested Commit Message**: `docs: formulate class diagrams and OOP documentation based on application hooks and entities`
 
-### Person 3: Software Design Patterns (Name: [Insert Name])
+### Person 3: Software Design Patterns (Name: Omkar Shukla)
 - **Role**: Wrote `docs/Design_Patterns.md`, highlighting the utilization of MVC formatting in App Router and Singleton paradigms inside API wrappers.
 - **Suggested Commit Message**: `docs: analyze and document MVC and Singleton pattern usage in Next.js structure`
 
-### Person 4: Database & Entity Management (Name: [Insert Name])
+### Person 4: Database & Entity Management (Name: Sanchit Garg)
 - **Role**: Extrapolated the Relational Schema and Entity linkages forming `diagrams/ER_Diagram.md` and `db/schema.sql` based entirely on the existing `api.js` structure.
 - **Suggested Commit Message**: `db: generate reverse-engineered relational SQL schema and entity definitions`
 
-### Person 5: Source Code Structure Analysis (Name: [Insert Name])
+### Person 5: Source Code Structure Analysis (Name: Raghav Gupta)
 - **Role**: Wrote `docs/Source_Structure.md` comprehensively explaining our specialized usage of Next.js `/app` router layouts alongside modular decoupled `/components`.
 - **Suggested Commit Message**: `docs: structure detailed architectural analysis of Next.js source code layer`
