@@ -4,90 +4,36 @@
 
 ---
 
-## 📊 ER Diagram (Mermaid)
+## 📊 ER Diagram
 
-```mermaid
-erDiagram
-    BUS {
-        string busId PK
-        string registrationNo
-        string type
-        string status
-        int capacity
-        string driverId
-    }
-
-    ROUTE {
-        string routeId PK
-        string name
-        float farePerKm
-        string startPoint
-        string endPoint
-    }
-
-    TRIP {
-        string tripId PK
-        string busId FK
-        string routeId FK
-        string status
-        date startTime
-        date endTime
-    }
-
-    USER {
-        string userId PK
-        string mobile
-        string name
-        string email
-    }
-
-    BOOKING {
-        string bookingId PK
-        string userId FK
-        string tripId FK
-        string status
-        string seatNumber
-        string paymentStatus
-    }
-
-    %% ========== CORE RELATIONSHIPS ==========
-
-    BUS ||--o{ TRIP : "operates"
-    ROUTE ||--o{ TRIP : "served-by"
-    
-    USER ||--o{ BOOKING : "creates"
-    TRIP ||--o{ BOOKING : "includes"
-```
+![ER Diagram](er_diagram.png)
 
 ---
 
-## 📋 Conceptual Entity Summary
+## 📋 Entity Summary
 
-| Entity   | Role in System                               | Primary Key  |
+| Entity   | Description                                  | Primary Key  |
 |----------|----------------------------------------------|--------------|
-| **Bus**  | The physical vehicle operating the trips.    | `busId`      |
-| **Route**| The predefined path the bus travels.         | `routeId`    |
-| **Trip** | A specific journey made by a Bus on a Route. | `tripId`     |
-| **User** | The passenger booking travel tickets.        | `userId`     |
-| **Booking**| The transaction/ticket for a User on a Trip. | `bookingId`  |
+| **Bus**  | Fleet vehicles tracking physical transit ops | `busId`      |
+| **Route**| Predefined geographical path for trips       | `routeId`    |
+| **Trip** | A specific scheduled journey made by a bus   | `tripId`     |
+| **User** | The passenger account using the service      | `userId`     |
+| **Booking**| A transaction between a user and a trip    | `bookingId`  |
 
 ---
 
-## 🔗 Core Flow
+## 🔗 Relationship Summary
 
-1. A **Bus** is assigned to **operate** a **Trip**.
-2. That **Trip** serves a specific **Route**.
-3. A **User** creates a **Booking**.
-4. That **Booking** is linked to that specific **Trip**.
+| Relationship               | Cardinality | Description                                    |
+|----------------------------|-------------|------------------------------------------------|
+| Bus **operates** Trip      | 1 : M       | One bus operates many trips over time          |
+| Route **served-by** Trip   | 1 : M       | One route is served by many scheduled trips    |
+| User **Creates** Booking   | 1 : M       | One passenger can create many bookings         |
+| Trip **includes** Booking  | 1 : M       | One trip includes many passenger bookings      |
 
 ---
 
 ## 📝 Notes
 
-1. **MongoDB Document Model**: While this ER diagram follows relational conventions, the actual database uses MongoDB (NoSQL). Relationships are implemented via string-based foreign keys (e.g., `busId`, `routeId`) rather than traditional SQL foreign key constraints.
-
-2. **Embedded Documents**: The `Stop` entity is embedded within the `Route` document as a sub-document array, leveraging MongoDB's document model for co-located data access.
-
-3. **Denormalization**: Some fields like `busId` appear in multiple collections (Trip, Ticket, Heartbeat) for query performance — a common MongoDB pattern.
-
-4. **Compound Indexes**: Several collections use compound indexes (e.g., `Ticket: {tripId, issuedAt}`, `Heartbeat: {busId, timestamp}`) for optimized query performance on frequently accessed data patterns.
+1. **Focus**: This diagram represents the core conceptual data model focused strictly on the bus-trip-booking cycle, abstracting away the IoT, telemetry, and employee (driver/conductor) tables for clarity.
+2. **Implementation**: While this ER diagram follows relational conventions, the actual database backend uses MongoDB. Relationships are implemented via string-based foreign keys (e.g., `busId`, `routeId`) rather than strict relational integrity constraints.
