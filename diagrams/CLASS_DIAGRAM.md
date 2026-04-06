@@ -6,152 +6,25 @@
 
 ## 📊 UML Class Diagram (Mermaid)
 
-```mermaid
-classDiagram
-    direction TB
-    
-    class Bus {
-        -string busId
-        -string registrationNo
-        -string type
-        -string status
-        +save()
-    }
-    
-    class Route {
-        -string routeId
-        -string name
-        -float farePerKm
-        +save()
-    }
-    
-    class Trip {
-        -string tripId
-        -Date actualStartTime
-        -string status
-        +save()
-    }
-    
-    class Ticket {
-        -string ticketId
-        -float fareAmount
-        -string paymentMode
-        +save()
-    }
-
-    Bus "1" -- "*" Trip : operates
-    Route "1" -- "*" Trip : serves
-    Trip "1" -- "*" Ticket : generates
-```
+![Core System UML Class Diagram](./images/core_system.png)
 
 ### 2. Booking System UML
 
 Focuses on how users interact with bookings and payments.
 
-```mermaid
-classDiagram
-    direction TB
-    
-    class AppUser {
-        -string userId
-        -string mobile
-        -string name
-        +login()
-    }
-    
-    class UserBooking {
-        -string bookingId
-        -Date journeyDate
-        -string paymentStatus
-        -string qrCode
-        +createBooking()
-        +cancelBooking()
-    }
-    
-    class Ticket {
-        -string ticketId
-        -float fareAmount
-        -string currency
-        +issueTicket()
-    }
-
-    AppUser "1" -- "*" UserBooking : creates
-    UserBooking "1" -- "1" Ticket : converts to
-```
+![Booking System UML Class Diagram](./images/booking_system.png)
 
 ### 3. Fleet & Admin System UML
 
 Focuses on how administrators manage the fleet and personnel.
 
-```mermaid
-classDiagram
-    direction TB
-    
-    class AdminUser {
-        -string email
-        -string role
-        +login()
-    }
-    
-    class Driver {
-        -string driverId
-        -string name
-        -string licenseNo
-        +save()
-    }
-    
-    class Conductor {
-        -string conductorId
-        -string name
-        +issueTicket()
-    }
-    
-    class Bus {
-        -string busId
-        -string status
-        +save()
-    }
-
-    AdminUser --> Bus : manages
-    AdminUser --> Driver : manages
-    AdminUser --> Conductor : manages
-    Driver "1" -- "1" Bus : assigned to
-    Conductor "1" -- "1" Bus : assigned to
-```
+![Fleet & Admin System UML Class Diagram](./images/fleet_admin.png)
 
 ### 4. Tracking & Telemetry System UML
 
 Focuses on how devices, heartbeats, and buses connect for real-time tracking.
 
-```mermaid
-classDiagram
-    direction TB
-    
-    class Device {
-        -string deviceId
-        -string apiKey
-        -string status
-        +save()
-    }
-    
-    class Heartbeat {
-        -float lat
-        -float lng
-        -float speedKmph
-        -Date timestamp
-        +save()
-    }
-    
-    class Bus {
-        -string busId
-        -Date lastSeen
-        +save()
-    }
-
-    Device "1" -- "1" Bus : installed on
-    Bus "1" -- "*" Heartbeat : transmits
-    Device "1" -- "*" Heartbeat : generates
-```
+![Tracking & Telemetry System UML Class Diagram](./images/tracking_telemetry.png)
 
 ---
 
