@@ -4,7 +4,7 @@
 
 ---
 
-## 📊 ER Diagram
+## 📊 Core Conceptual ER Diagram (Booking Flow)
 
 ![ER Diagram](er_diagram.png)
 
