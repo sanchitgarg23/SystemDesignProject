@@ -6,25 +6,25 @@
 
 ## 📊 UML Class Diagram (Mermaid)
 
-![Core System UML Class Diagram](./images/core_system.png)
+![Core System UML Class Diagram](./images/tracking_telemetry.png)
 
 ### 2. Booking System UML
 
 Focuses on how users interact with bookings and payments.
 
-![Booking System UML Class Diagram](./images/booking_system.png)
-
+![Booking System UML Class Diagram](./images/fleet_admin.png)
 ### 3. Fleet & Admin System UML
 
 Focuses on how administrators manage the fleet and personnel.
 
-![Fleet & Admin System UML Class Diagram](./images/fleet_admin.png)
+![Fleet & Admin System UML Class Diagram](./images/core_system.png)
 
 ### 4. Tracking & Telemetry System UML
 
 Focuses on how devices, heartbeats, and buses connect for real-time tracking.
 
-![Tracking & Telemetry System UML Class Diagram](./images/tracking_telemetry.png)
+![Tracking & Telemetry System UML Class Diagram](./images/booking_system.png)
+
 
 ---
 
