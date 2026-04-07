@@ -4,26 +4,129 @@
 
 ---
 
-## 📊 UML Class Diagram (Mermaid)
+## 📊 Unified Domain-Driven UML Class Diagram
 
-![Core System UML Class Diagram](./images/tracking_telemetry.png)
+This comprehensive Class Diagram illustrates the end-to-end architecture of the **NextStop** system, focusing on how different domains (Fleet, Users, Ticketing, and Telemetry) interact to provide a seamless government bus tracking network.
 
-### 2. Booking System UML
+```mermaid
+classDiagram
+    direction TB
+    
+    %% Core Transit Entities
+    class Route {
+        <<Domain Entity>>
+        +String routeId
+        +String routeName
+        +Float distanceKm
+        +save()
+    }
+    class Stop {
+        <<Value Object>>
+        +String stopName
+        +Float lat
+        +Float lng
+    }
+    class Bus {
+        <<Domain Entity>>
+        +String busId
+        +String registrationNo
+        +String status
+        +save()
+    }
+    class Trip {
+        <<Domain Entity>>
+        +String tripId
+        +DateTime startTime
+        +String status
+        +save()
+    }
+    
+    %% Personnel
+    class Driver {
+        <<Actor>>
+        +String driverId
+        +String name
+        +String licenseNo
+    }
+    class Conductor {
+        <<Actor>>
+        +String conductorId
+        +String name
+    }
+    
+    %% Passengers and Bookings
+    class AppUser {
+        <<Actor Passenger>>
+        +String userId
+        +String name
+        +Float walletBalance
+    }
+    class UserBooking {
+        <<Transaction>>
+        +String bookingId
+        +String paymentStatus
+        +String qrCode
+        +save()
+    }
+    class Ticket {
+        <<Transaction>>
+        +String ticketId
+        +Float fare
+        +String source
+        +String destination
+    }
+    
+    %% IoT & Telemetry
+    class Device {
+        <<Hardware>>
+        +String deviceId
+        +String imei
+        +String batteryLevel
+    }
+    class Heartbeat {
+        <<IoT Event>>
+        +Float latitude
+        +Float longitude
+        +Float speed
+        +DateTime timestamp
+    }
+    
+    %% Business Relationships
+    Route "1" *-- "many" Stop : contains
+    Trip "*" -- "1" Route : operates on
+    Trip "*" -- "1" Bus : assigned to
+    Trip "*" -- "1" Driver : driven by
+    Trip "*" -- "1" Conductor : managed by
+    
+    Bus "1" -- "1" Device : tracked via
+    Device "1" *-- "many" Heartbeat : transmits
+    
+    AppUser "1" -- "*" UserBooking : makes
+    UserBooking "*" -- "1" Trip : scheduled for
+    UserBooking "1" -- "1" Ticket : generates
+    Conductor "1" -- "*" Ticket : validates/issues
 
-Focuses on how users interact with bookings and payments.
+    %% Core Services Orchestrating Domains
+    class BookingService {
+        <<ServiceLayer>>
+        +createBooking()
+        +validateQR()
+    }
+    class IngestService {
+        <<ServiceLayer>>
+        +processHeartbeat()
+    }
+    
+    BookingService ..> UserBooking: orchestrates
+    IngestService ..> Heartbeat: processes
+```
 
-![Booking System UML Class Diagram](./images/fleet_admin.png)
-### 3. Fleet & Admin System UML
-
-Focuses on how administrators manage the fleet and personnel.
-
-![Fleet & Admin System UML Class Diagram](./images/core_system.png)
-
-### 4. Tracking & Telemetry System UML
-
-Focuses on how devices, heartbeats, and buses connect for real-time tracking.
-
-![Tracking & Telemetry System UML Class Diagram](./images/booking_system.png)
+### Sub-System Flows Overview
+The diagram natively groups into four logical domains:
+1. **Fleet & Core Transit (Top)**: Details the physical assets like Routes, Stops, Buses, and Trips.
+2. **Personnel (Middle Left)**: Defines operational actors including Drivers and Conductors.
+3. **Ticketing & Booking (Middle Right)**: Covers app-based passenger flows, bookings, and ticket generation.
+4. **IoT Tracking (Bottom Left)**: Real-time telemetry heartbeat data ingested from onboard GPS Devices.
 
 
 ---
