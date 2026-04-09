@@ -8,54 +8,7 @@ This diagram visually represents the **Actors** (the people using the system) st
 
 ## 📊 Visual Diagram
 
-```mermaid
-flowchart LR
-    %% The Actors (Using transparent borders so they just look like people)
-    Admin["👨‍💼 Admin (Office)"]
-    Passenger["🧍 Passenger (Traveler)"]
-    Conductor["👨‍✈️ Conductor (Staff)"]
-
-    %% The System Boundary
-    subgraph System [NextStop Application]
-        direction TB
-        
-        %% Admin Use Cases (Ovals)
-        U1([Add / Remove Buses])
-        U2([View Live Dashboard])
-        U3([Check Daily Earnings])
-        
-        %% Passenger Use Cases
-        U4([Search Bus Routes])
-        U5([Track Bus Live Location])
-        U6([Book QR e-Ticket])
-        
-        %% Conductor Use Cases
-        U7([Issue Physical Tickets])
-        U8([Scan Passenger QR Codes])
-        U9([Sync Offline Ticket Data])
-    end
-
-    %% Arrows connecting Actors to their actions
-    Admin --> U1
-    Admin --> U2
-    Admin --> U3
-
-    Passenger --> U4
-    Passenger --> U5
-    Passenger --> U6
-
-    Conductor --> U7
-    Conductor --> U8
-    Conductor --> U9
-
-    %% Styling to make Actors look like stand-alone text/people without boxes
-    classDef actor fill:none,stroke:none,font-weight:bold,font-size:16px;
-    class Admin,Passenger,Conductor actor;
-
-    %% Styling to make Use Cases look like classic light-blue ovals
-    classDef usecase fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000;
-    class U1,U2,U3,U4,U5,U6,U7,U8,U9 usecase;
-```
+![Use Case Diagram](./use_case_diagram.png)
 
 ---
 

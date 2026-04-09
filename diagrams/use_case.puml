@@ -1,0 +1,40 @@
+@startuml
+skinparam handwritten false
+skinparam monochrome false
+skinparam packageStyle rectangle
+skinparam backgroundColor white
+skinparam defaultFontName sans-serif
+
+left to right direction
+
+actor "Admin" as admin
+actor "Passenger" as passenger
+actor "Conductor" as conductor
+
+rectangle "NextStop System" {
+  usecase "Add/Remove Buses" as UC1
+  usecase "View Live Dashboard" as UC2
+  usecase "Check Daily Earnings" as UC3
+  
+  usecase "Search Bus Routes" as UC4
+  usecase "Track Bus Live Location" as UC5
+  usecase "Book e-Ticket" as UC6
+  
+  usecase "Issue Physical Tickets" as UC7
+  usecase "Scan Passenger QR Codes" as UC8
+  usecase "Upload Offline Ticket Data" as UC9
+}
+
+admin --> UC1
+admin --> UC2
+admin --> UC3
+
+passenger --> UC4
+passenger --> UC5
+passenger --> UC6
+
+conductor --> UC7
+conductor --> UC8
+conductor --> UC9
+
+@enduml
