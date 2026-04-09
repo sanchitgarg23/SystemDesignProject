@@ -2,12 +2,7 @@
 
 ## Project: NextStop — Government Bus Tracking 
 
-A **Use Case Diagram** simply shows "who does what" in the system. It connects the users (Actors) to the actions they can perform (Use Cases).
-
-Overall, we have 3 main humans using the system:
-1. **Admin**: Manages everything from the big office.
-2. **Passenger**: Travels on the bus and uses the mobile app.
-3. **Conductor**: Issues tickets on the actual bus using a machine.
+This diagram visually represents the **Actors** (the people using the system) standing on the outside, and arrows pointing toward their specific **Use Cases** (the actions they take) inside the application boundary.
 
 ---
 
@@ -15,42 +10,64 @@ Overall, we have 3 main humans using the system:
 
 ```mermaid
 flowchart LR
-    %% Actors 
-    Admin([🤵 Admin])
-    Passenger([👤 Passenger])
-    Conductor([🎫 Conductor])
+    %% The Actors (Using transparent borders so they just look like people)
+    Admin["👨‍💼 Admin (Office)"]
+    Passenger["🧍 Passenger (Traveler)"]
+    Conductor["👨‍✈️ Conductor (Staff)"]
 
-    %% Admin Actions
-    Admin --> UC1(Add/Remove Buses & Drivers)
-    Admin --> UC2(View Live Map & Dashboard)
-    Admin --> UC3(Check Earnings & Reports)
+    %% The System Boundary
+    subgraph System [NextStop Application]
+        direction TB
+        
+        %% Admin Use Cases (Ovals)
+        U1([Add / Remove Buses])
+        U2([View Live Dashboard])
+        U3([Check Daily Earnings])
+        
+        %% Passenger Use Cases
+        U4([Search Bus Routes])
+        U5([Track Bus Live Location])
+        U6([Book QR e-Ticket])
+        
+        %% Conductor Use Cases
+        U7([Issue Physical Tickets])
+        U8([Scan Passenger QR Codes])
+        U9([Sync Offline Ticket Data])
+    end
 
-    %% Passenger Actions
-    Passenger --> UC4(Search for Bus Routes)
-    Passenger --> UC5(Track Bus Live Location)
-    Passenger --> UC6(Book e-Ticket)
+    %% Arrows connecting Actors to their actions
+    Admin --> U1
+    Admin --> U2
+    Admin --> U3
 
-    %% Conductor Actions
-    Conductor --> UC7(Give Physical Tickets for Cash)
-    Conductor --> UC8(Scan Passenger's e-Ticket QR)
-    Conductor --> UC9(Upload Offline Data to Server)
+    Passenger --> U4
+    Passenger --> U5
+    Passenger --> U6
+
+    Conductor --> U7
+    Conductor --> U8
+    Conductor --> U9
+
+    %% Styling to make Actors look like stand-alone text/people without boxes
+    classDef actor fill:none,stroke:none,font-weight:bold,font-size:16px;
+    class Admin,Passenger,Conductor actor;
+
+    %% Styling to make Use Cases look like classic light-blue ovals
+    classDef usecase fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000;
+    class U1,U2,U3,U4,U5,U6,U7,U8,U9 usecase;
 ```
 
 ---
 
-## 📋 What each user can do (Explained simply)
+## 📋 Simple Explanation
 
-### 1. The Admin (Office Manager)
-- **Add/Remove Buses & Drivers**: Can register new buses or hire new drivers in the system's database.
-- **View Live Map & Dashboard**: Can look at the main screen to see where all the buses are currently driving.
-- **Check Earnings & Reports**: Can see how many tickets were sold and how much money the government made today.
+This is the classic way to read this diagram:
+- The **System Boundary** (the big box labeled "NextStop Application") represents everything inside our software.
+- The **Actors** (the people on the left) interact with the software from the outside.
+- The **Arrows** point exactly to what each person is allowed to do.
 
-### 2. The Passenger (Traveler)
-- **Search for Bus Routes**: Can open the mobile app and find buses going from Point A to Point B.
-- **Track Bus Live Location**: Can see exactly where their bus is on the map so they don't miss it.
-- **Book e-Ticket**: Can buy a ticket online using the app and get a QR code on their phone.
+### Actors & Actions Breakdown:
 
-### 3. The Conductor (Bus Staff)
-- **Give Physical Tickets for Cash**: Uses the handheld ticketing machine (ETM) to print tickets for people who pay with cash.
-- **Scan Passenger's e-Ticket QR**: Scans the passenger's mobile phone to confirm they already paid online.
-- **Upload Offline Data to Server**: If the bus travels through an area with no internet, the machine saves ticket data. When the internet comes back, the conductor pushes a button to upload it all to the server safely.
+1. **👨‍💼 Admin**: Sits in the back-office. They have the power to **manage the fleet** (buses and drivers), watch the **live tracking dashboard**, and review the **daily revenue**.
+2. **🧍 Passenger**: Uses the system on their mobile phone. They mainly want to **find where the bus is**, **track it in real-time**, and **buy a digital ticket**.
+3. **👨‍✈️ Conductor**: Operates on the physical bus. They use a hand-held machine to **print out tickets**, **scan tickets** bought by passengers digitally, and **upload** all that offline data to the server when they reach the depot.
