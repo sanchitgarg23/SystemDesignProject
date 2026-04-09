@@ -4,13 +4,13 @@
 
 ---
 
-## 📊 Core Conceptual ER Diagram (Booking Flow)
+## Core Conceptual ER Diagram (Booking Flow)
 
 ![ER Diagram](er_diagram.png)
 
 ---
 
-## 📋 Entity Summary
+## Entity Summary
 
 | Entity   | Description                                  | Primary Key  |
 |----------|----------------------------------------------|--------------|
@@ -22,7 +22,7 @@
 
 ---
 
-## 🔗 Relationship Summary
+## Relationship Summary
 
 | Relationship               | Cardinality | Description                                    |
 |----------------------------|-------------|------------------------------------------------|
@@ -33,7 +33,7 @@
 
 ---
 
-## 📝 Notes
+## Notes
 
 1. **Focus**: This diagram represents the core conceptual data model focused strictly on the bus-trip-booking cycle, abstracting away the IoT, telemetry, and employee (driver/conductor) tables for clarity.
 2. **Implementation**: While this ER diagram follows relational conventions, the actual database backend uses MongoDB. Relationships are implemented via string-based foreign keys (e.g., `busId`, `routeId`) rather than strict relational integrity constraints.

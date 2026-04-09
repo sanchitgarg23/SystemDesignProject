@@ -4,7 +4,7 @@
 
 ---
 
-## 📊 Unified Domain-Driven UML Class Diagram
+## Unified Domain-Driven UML Class Diagram
 
 This comprehensive Class Diagram illustrates the end-to-end architecture of the **NextStop** system, focusing on how different domains (Fleet, Users, Ticketing, and Telemetry) interact to provide a seamless government bus tracking network.
 
@@ -20,7 +20,7 @@ The diagram natively groups into four logical domains:
 
 ---
 
-## 📋 Class Summary
+## Class Summary
 
 ### Model Layer (14 Classes)
 
@@ -74,7 +74,7 @@ The diagram natively groups into four logical domains:
 
 ---
 
-## 🔗 Relationship Types
+## Relationship Types
 
 | Relationship Type | Symbol | Examples in Project                        |
 |-------------------|--------|--------------------------------------------|
@@ -85,7 +85,7 @@ The diagram natively groups into four logical domains:
 
 ---
 
-## 📝 Notes
+## Notes
 
 1. **Mongoose Document Pattern**: All Model classes extend Mongoose's `Document` interface, inheriting built-in methods like `save()`, `remove()`, `toJSON()`, and `toObject()`.
 

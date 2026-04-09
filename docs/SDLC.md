@@ -6,7 +6,7 @@
 
 ---
 
-## Phase 1: Planning 📝
+## Phase 1: Planning
 **Duration: Week 1–2**
 
 ### Activities:
@@ -27,14 +27,14 @@
 | FR-8 | Voice-based route queries (Punjabi)        | Low      |
 
 ### Deliverables:
-- ✅ Software Requirements Specification (SRS)
-- ✅ Technology stack selection
-- ✅ Team role assignment
-- ✅ Project timeline and milestones
+- Software Requirements Specification (SRS)
+- Technology stack selection
+- Team role assignment
+- Project timeline and milestones
 
 ---
 
-## Phase 2: Design 🎨
+## Phase 2: Design
 **Duration: Week 2–3**
 
 ### Activities:
@@ -54,14 +54,14 @@
 | Maps                   | OLA Maps SDK     | India-focused local mapping           |
 
 ### Design Artifacts:
-- ✅ ER Diagram (see `diagrams/ER_DIAGRAM.md`)
-- ✅ Class Diagram (see `diagrams/CLASS_DIAGRAM.md`)
-- ✅ API endpoint specification
-- ✅ Database schema design
+- ER Diagram (see `diagrams/ER_DIAGRAM.md`)
+- Class Diagram (see `diagrams/CLASS_DIAGRAM.md`)
+- API endpoint specification
+- Database schema design
 
 ---
 
-## Phase 3: Development 💻
+## Phase 3: Development
 **Duration: Week 3–8**
 
 ### Sprint 1 (Week 3–4): Foundation
@@ -107,7 +107,7 @@
 
 ---
 
-## Phase 4: Testing 🧪
+## Phase 4: Testing
 **Duration: Ongoing (continuous)**
 
 ### Testing Strategies:
@@ -119,19 +119,19 @@
 ### Key Test Cases:
 | Test Case                         | Status  |
 |-----------------------------------|---------|
-| Admin login (valid/invalid)       | ✅ Pass |
-| Create bus with missing fields    | ✅ Pass |
-| GPS heartbeat ingestion           | ✅ Pass |
-| Ticket issuance with QR           | ✅ Pass |
-| Offline batch sync                | ✅ Pass |
-| SSE stream connection             | ✅ Pass |
-| Route bulk upload (CSV)           | ✅ Pass |
-| Dashboard loads all widgets       | ✅ Pass |
-| Mobile responsive layout          | ✅ Pass |
+| Admin login (valid/invalid)       | Pass |
+| Create bus with missing fields    | Pass |
+| GPS heartbeat ingestion           | Pass |
+| Ticket issuance with QR           | Pass |
+| Offline batch sync                | Pass |
+| SSE stream connection             | Pass |
+| Route bulk upload (CSV)           | Pass |
+| Dashboard loads all widgets       | Pass |
+| Mobile responsive layout          | Pass |
 
 ---
 
-## Phase 5: Deployment 🚀
+## Phase 5: Deployment
 **Duration: Week 8+**
 
 ### Deployment Stack:
