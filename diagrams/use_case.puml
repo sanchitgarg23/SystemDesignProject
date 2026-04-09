@@ -1,17 +1,34 @@
 @startuml
-skinparam handwritten false
-skinparam monochrome false
-skinparam packageStyle rectangle
-skinparam backgroundColor white
-skinparam defaultFontName sans-serif
-
 left to right direction
 
-actor "Admin" as admin
-actor "Passenger" as passenger
-actor "Conductor" as conductor
+skinparam defaultFontName Arial
+skinparam backgroundcolor white
 
-rectangle "NextStop System" {
+skinparam actor {
+    BackgroundColor white
+    BorderColor black
+    FontColor black
+}
+
+skinparam usecase {
+    BackgroundColor white
+    BorderColor #333333
+    FontColor black
+}
+
+skinparam rectangle {
+    BackgroundColor #FFEBB5
+    BorderColor #A67D3D
+    FontColor black
+    FontSize 18
+    FontStyle bold
+}
+
+actor "Admin\n(Office)" as admin
+actor "Passenger\n(Traveler)" as passenger
+actor "Conductor\n(Staff)" as conductor
+
+rectangle "NextStop Online System" {
   usecase "Add/Remove Buses" as UC1
   usecase "View Live Dashboard" as UC2
   usecase "Check Daily Earnings" as UC3
