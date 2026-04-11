@@ -1,169 +1,59 @@
 import { Request, Response, NextFunction } from 'express';
-import { Device } from '../models';
+import {
+  DeviceAuthStrategy,
+  BearerAuthStrategy,
+  AdminAuthStrategy,
+  AppUserAuthStrategy,
+  ConductorAuthStrategy,
+} from './strategies/AuthStrategy';
+import { AuthMiddlewareFactory } from './strategies/AuthMiddlewareFactory';
+
+/**
+ * Authentication Middleware
+ * 
+ * Implements the Strategy Pattern: each authentication function uses a
+ * different concrete strategy class internally, but they all share the
+ * same Express middleware signature (req, res, next).
+ * 
+ * Design Pattern: Strategy
+ * - IAuthStrategy defines the common interface
+ * - DeviceAuthStrategy, AdminAuthStrategy, etc. are concrete strategies
+ * - AuthMiddlewareFactory converts strategies into Express middleware
+ * 
+ * OOP Concept: Polymorphism
+ * - All 5 functions below have identical signatures
+ * - Express treats them interchangeably in the middleware chain
+ * - Each internally delegates to a different strategy with different logic
+ */
+
+// Instantiate strategy objects (reusable across requests)
+const deviceStrategy = new DeviceAuthStrategy();
+const bearerStrategy = new BearerAuthStrategy();
+const adminStrategy = new AdminAuthStrategy();
+const appUserStrategy = new AppUserAuthStrategy();
+const conductorStrategy = new ConductorAuthStrategy();
 
 /**
  * Authenticate ETM Device via X-Device-Key header
  */
-export async function authenticateDevice(req: Request, res: Response, next: NextFunction) {
-  const apiKey = req.headers['x-device-key'] as string;
-
-  if (!apiKey) {
-    return res.status(401).json({
-      code: 'MISSING_KEY',
-      message: 'X-Device-Key header is required',
-    });
-  }
-
-  try {
-    const device = await Device.findOne({ apiKey, status: 'active' });
-
-    if (!device) {
-      return res.status(401).json({
-        code: 'INVALID_KEY',
-        message: 'Invalid or inactive device key',
-      });
-    }
-
-    // Update last seen
-    device.lastSeen = new Date();
-    await device.save();
-
-    req.device = {
-      device_id: device.deviceId,
-      bus_id: device.busId,
-    };
-
-    next();
-  } catch (error) {
-    console.error('Device auth error:', error);
-    res.status(500).json({
-      code: 'AUTH_ERROR',
-      message: 'Authentication failed',
-    });
-  }
-}
+export const authenticateDevice = AuthMiddlewareFactory.create(deviceStrategy);
 
 /**
  * Authenticate via Bearer token (for query endpoints)
  */
-export function authenticateBearer(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-      code: 'MISSING_AUTH',
-      message: 'Authorization header required',
-    });
-  }
-
-  const token = authHeader.split(' ')[1];
-  const validToken = process.env.ETM_BEARER_TOKEN || 'demo_token_12345';
-
-  if (token !== validToken) {
-    return res.status(401).json({
-      code: 'INVALID_TOKEN',
-      message: 'Invalid bearer token',
-    });
-  }
-
-  req.authenticated = true;
-  next();
-}
+export const authenticateBearer = AuthMiddlewareFactory.create(bearerStrategy);
 
 /**
  * Authenticate Admin users
  */
-export function authenticateAdmin(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-      code: 'MISSING_AUTH',
-      message: 'Authorization header required',
-    });
-  }
-
-  const token = authHeader.split(' ')[1];
-  const validToken = process.env.ADMIN_DEMO_TOKEN || 'admin_demo_token_12345';
-
-  if (token !== validToken) {
-    return res.status(401).json({
-      code: 'INVALID_TOKEN',
-      message: 'Invalid admin token',
-    });
-  }
-
-  req.authenticated = true;
-  next();
-}
+export const authenticateAdmin = AuthMiddlewareFactory.create(adminStrategy);
 
 /**
  * Authenticate App users (passengers)
  */
-export function authenticateAppUser(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-      code: 'MISSING_AUTH',
-      message: 'Authorization header required',
-    });
-  }
-
-  const token = authHeader.split(' ')[1];
-
-  // Token format: APP_userId_timestamp
-  if (!token.startsWith('APP_')) {
-    return res.status(401).json({
-      code: 'INVALID_TOKEN',
-      message: 'Invalid app token',
-    });
-  }
-
-  // Extract user ID from token
-  const parts = token.split('_');
-  if (parts.length >= 2) {
-    req.user = {
-      user_id: parts[1],
-      mobile: '', // Would be looked up in production
-    };
-  }
-
-  req.authenticated = true;
-  next();
-}
+export const authenticateAppUser = AuthMiddlewareFactory.create(appUserStrategy);
 
 /**
  * Authenticate Conductors
  */
-export async function authenticateConductor(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-      code: 'MISSING_AUTH',
-      message: 'Authorization header required',
-    });
-  }
-
-  const token = authHeader.split(' ')[1];
-
-  // Token format: CONDUCTOR_deviceId_conductorId_timestamp
-  if (!token.startsWith('CONDUCTOR_')) {
-    return res.status(401).json({
-      code: 'INVALID_TOKEN',
-      message: 'Invalid conductor token',
-    });
-  }
-
-  const parts = token.split('_');
-  if (parts.length >= 3) {
-    req.device = {
-      device_id: parts[1],
-      bus_id: null,
-    };
-  }
-
-  req.authenticated = true;
-  next();
-}
+export const authenticateConductor = AuthMiddlewareFactory.create(conductorStrategy);

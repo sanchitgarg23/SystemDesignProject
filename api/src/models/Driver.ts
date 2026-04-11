@@ -1,27 +1,25 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose from 'mongoose';
+import { IBasePersonnel, createPersonnelSchema } from './BasePersonnel';
 
-export interface IDriver extends Document {
+/**
+ * Driver Model
+ * 
+ * Extends IBasePersonnel via inheritance — shares name, phone, licenseNo,
+ * status, and currentBusId with the Conductor model.
+ * 
+ * OOP Concept: Inheritance
+ * - IDriver extends IBasePersonnel (adds driverId)
+ * - Uses createPersonnelSchema() factory for shared schema fields
+ */
+export interface IDriver extends IBasePersonnel {
   driverId: string;
-  name: string;
-  phone: string;
-  licenseNo: string;
-  status: 'active' | 'inactive' | 'on_leave';
-  currentBusId: string | null;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
-const DriverSchema = new Schema({
+const DriverSchema = createPersonnelSchema();
+
+// Add Driver-specific field on top of inherited personnel fields
+DriverSchema.add({
   driverId: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
-  phone: { type: String, required: true },
-  licenseNo: { type: String, required: true },
-  status: { 
-    type: String, 
-    enum: ['active', 'inactive', 'on_leave'],
-    default: 'active' 
-  },
-  currentBusId: { type: String, default: null },
-}, { timestamps: true });
+});
 
 export const Driver = mongoose.model<IDriver>('Driver', DriverSchema);

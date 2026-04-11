@@ -15,3 +15,6 @@ export { Driver, IDriver } from './Driver';
 export { Conductor, IConductor } from './Conductor';
 export { Bus, IBus } from './Bus';
 export { AdminUser, IAdminUser } from './AdminUser';
+
+// OOP Base Classes
+export { IBasePersonnel, createPersonnelSchema } from './BasePersonnel';

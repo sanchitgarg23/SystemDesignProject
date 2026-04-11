@@ -4,7 +4,7 @@
 
 ---
 
-Our project uses JavaScript and TypeScript, which aren't purely object-oriented languages, but we still ended up using all four OOP principles in different parts of the code. Here's how.
+Our project uses TypeScript, which supports full object-oriented programming. We implemented all four OOP principles as actual classes and interfaces throughout the codebase. Here's how.
 
 ---
 
@@ -12,30 +12,62 @@ Our project uses JavaScript and TypeScript, which aren't purely object-oriented 
 
 Encapsulation means keeping data and the functions that work on it together, and not letting outside code mess with the internals directly.
 
+### In our Service Classes
+
+Each service class bundles related operations together and hides implementation details. For example, the `AdminService` class encapsulates all admin dashboard logic:
+
+```typescript
+// api/src/services/admin.service.ts
+export class AdminService {
+  // Public interface — controllers call these simple methods
+  public static async getRealtimeAnalytics() { ... }
+  public static async getRevenueAnalytics(date: string) { ... }
+  public static async getFleetBuses() { ... }
+
+  // Private helper — internal implementation detail, not accessible outside
+  private static getEstimatedPassengers(hour: number, capacity: number): number {
+    if (hour >= 7 && hour <= 9) return Math.round(capacity * 1.8);
+    // ...
+  }
+}
+```
+
 ### In our Mongoose Models
 
-Each model file bundles the data fields, validation rules, and database methods together. For example, the Bus model:
+Each model file bundles the data fields, validation rules, and database methods together:
 
 ```typescript
 // api/src/models/Bus.ts
 const BusSchema = new Schema({
   busId: { type: String, required: true, unique: true },
-  registrationNo: { type: String, required: true },
-  status: { 
-    type: String, 
-    enum: ['active', 'inactive', 'maintenance'],
-    default: 'active' 
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'maintenance'],  // Constrained values
+    default: 'active'
   },
 }, { timestamps: true });
-
-export const Bus = mongoose.model<IBus>('Bus', BusSchema);
 ```
 
-The schema defines what fields exist, what values are allowed (enum), and what's required. Nobody outside this file can just set `status` to some random value — Mongoose will reject it.
+Nobody outside this file can set `status` to a random value — Mongoose will reject it.
+
+### In the Database Singleton
+
+The `Database` class encapsulates the connection state as a private field:
+
+```typescript
+// api/src/config/db.ts
+export class Database {
+  private static instance: Database;
+  private isConnected: boolean = false;  // Private — can't be modified externally
+
+  private constructor() { ... }   // Private — prevents direct instantiation
+  public static getInstance() { ... }  // Controlled access point
+}
+```
 
 ### In AuthContext
 
-On the frontend, we use React Context to manage login state:
+On the frontend, React Context manages login state through controlled methods:
 
 ```javascript
 // admin-portal/contexts/AuthContext.jsx
@@ -55,64 +87,89 @@ const logout = () => {
 };
 ```
 
-Components can't modify `user` or `token` directly. They have to go through `login()` and `logout()`. This prevents bugs where some random component accidentally changes the auth state.
-
-### In the API Client
-
-Our `lib/api.js` hides all the HTTP stuff (tokens, headers, error handling) behind simple functions:
-
-```javascript
-// What components call:
-const buses = await getFleetBuses();
-
-// What actually happens inside:
-// - grabs token from localStorage
-// - adds Authorization header
-// - makes fetch request
-// - parses JSON
-// Components don't need to know any of this
-```
+Components can't modify `user` or `token` directly. They have to go through `login()` and `logout()`.
 
 ---
 
 ## 2. Inheritance
 
-Inheritance is when something gets properties/methods from a parent. We see this in a few places.
+Inheritance is when something gets properties and methods from a parent. We use this in several places.
+
+### BasePersonnel — Shared Driver/Conductor Interface
+
+Driver and Conductor are nearly identical entities. Instead of duplicating code, we defined a `BasePersonnel` interface and a shared schema factory:
+
+```typescript
+// api/src/models/BasePersonnel.ts
+export interface IBasePersonnel extends Document {
+  name: string;
+  phone: string;
+  licenseNo: string;
+  status: 'active' | 'inactive' | 'on_leave';
+  currentBusId: string | null;
+}
+
+export function createPersonnelSchema(): Schema {
+  return new Schema({
+    name: { type: String, required: true },
+    phone: { type: String, required: true },
+    licenseNo: { type: String, required: true },
+    status: { type: String, enum: ['active', 'inactive', 'on_leave'], default: 'active' },
+    currentBusId: { type: String, default: null },
+  }, { timestamps: true });
+}
+```
+
+```typescript
+// api/src/models/Driver.ts
+export interface IDriver extends IBasePersonnel {  // Inherits all personnel fields
+  driverId: string;                                // Adds its own ID
+}
+
+const DriverSchema = createPersonnelSchema();      // Reuses shared schema
+DriverSchema.add({ driverId: { type: String, required: true, unique: true } });
+```
+
+```typescript
+// api/src/models/Conductor.ts
+export interface IConductor extends IBasePersonnel {  // Same parent, same fields
+  conductorId: string;                                // Different ID field
+}
+
+const ConductorSchema = createPersonnelSchema();
+ConductorSchema.add({ conductorId: { type: String, required: true, unique: true } });
+```
+
+### BaseController — Abstract Controller Class
+
+All API controllers extend a common abstract class that provides shared utility methods:
+
+```typescript
+// api/src/controllers/BaseController.ts
+export abstract class BaseController {
+  protected router: Router;
+
+  constructor() {
+    this.router = Router();
+    this.initializeRoutes();
+  }
+
+  protected abstract initializeRoutes(): void;  // Subclasses must implement this
+  public getRouter(): Router { return this.router; }
+
+  protected sendSuccess(res, data, statusCode = 200) { ... }  // Inherited by all controllers
+  protected sendError(res, code, message, statusCode = 500) { ... }
+}
+```
 
 ### Mongoose Document
 
-Every model interface extends Mongoose's `Document`. This means all our models automatically get methods like `save()`, `remove()`, `toJSON()` etc. without us writing them.
+Every model interface extends Mongoose's `Document`. This means all our models automatically get methods like `save()`, `remove()`, `toJSON()` without us writing them:
 
 ```typescript
-interface IBus extends Document {       // gets all Document methods
-  busId: string;
-  registrationNo: string;
-}
-
-interface IDriver extends Document {    // same parent, same methods
-  driverId: string;
-  name: string;
-}
-
-interface IConductor extends Document { // same thing
-  conductorId: string;
-  name: string;
-}
+interface IBus extends Document { ... }       // gets all Document methods
+interface IDriver extends IBasePersonnel { ... }  // IBasePersonnel extends Document
 ```
-
-So when we do `bus.save()` or `driver.save()`, that `save()` method comes from the parent `Document` class — we didn't write it ourselves.
-
-### Driver and Conductor share the same structure
-
-If you look at the Driver and Conductor models, they're almost identical — both have `name`, `phone`, `licenseNo`, `status`, `currentBusId`. They're basically the same "personnel" type, just with different ID fields:
-
-```typescript
-// Both follow the same pattern
-Driver  → { driverId, name, phone, licenseNo, status, currentBusId }
-Conductor → { conductorId, name, phone, licenseNo, status, currentBusId }
-```
-
-This is structural inheritance — same shape, reused across entities.
 
 ---
 
@@ -120,38 +177,45 @@ This is structural inheritance — same shape, reused across entities.
 
 Polymorphism means different things can be used in the same way, even though they behave differently internally.
 
-### Authentication Middleware
+### Authentication Strategy Classes
 
-We have 5 different auth functions, but they all work the same way from Express's perspective — they take `(req, res, next)` and either let the request through or block it:
-
-```typescript
-authenticateDevice(req, res, next)     // checks X-Device-Key header
-authenticateAdmin(req, res, next)      // checks admin Bearer token
-authenticateAppUser(req, res, next)    // checks APP_ prefixed token
-authenticateConductor(req, res, next)  // checks CONDUCTOR_ prefixed token
-```
-
-Express doesn't care which one you use — they all have the same shape. But each one validates differently:
+We have 5 different auth strategy classes, but they all implement the same `IAuthStrategy` interface:
 
 ```typescript
-router.get('/fleet/buses', authenticateAdmin, handler);    // admin auth
-router.get('/stops', authenticateAppUser, handler);         // app user auth
-router.post('/heartbeat', authenticateDevice, handler);     // device auth
+// api/src/middleware/strategies/AuthStrategy.ts
+export interface IAuthStrategy {
+  authenticate(req: Request, res: Response, next: NextFunction): Promise<void> | void;
+}
+
+export class DeviceAuthStrategy implements IAuthStrategy {
+  // Checks X-Device-Key header, does DB lookup
+  public async authenticate(req, res, next) { ... }
+}
+
+export class AdminAuthStrategy implements IAuthStrategy {
+  // Checks admin Bearer token
+  public authenticate(req, res, next) { ... }
+}
+
+export class AppUserAuthStrategy implements IAuthStrategy {
+  // Checks APP_ prefix, extracts userId
+  public authenticate(req, res, next) { ... }
+}
 ```
 
-Same slot in the middleware chain, different logic inside. That's polymorphism.
-
-### Mongoose Model Methods
-
-All models have `.find()`, `.save()`, `.findOne()` — same method names, but each one works on a different MongoDB collection:
+Express doesn't care which strategy is behind the middleware — they all produce the same `(req, res, next)` function:
 
 ```typescript
-await Bus.find({ status: 'active' });      // searches buses collection
-await Driver.find({ status: 'active' });   // searches drivers collection
-await Trip.find({ status: 'active' });     // searches trips collection
+router.get('/fleet/buses', authenticateAdmin, handler);     // admin auth
+router.get('/stops', authenticateAppUser, handler);          // app user auth
+router.post('/heartbeat', authenticateDevice, handler);      // device auth
 ```
 
-Same function call, different data underneath.
+Same slot in the middleware chain, different validation logic inside. That's polymorphism.
+
+### Observer Pattern — IObserver implementations
+
+The `EventBus` calls `observer.update()` on any `IObserver`. Currently we have `SSEObserver`, but any class implementing `IObserver` could be substituted — the EventBus doesn't know or care about the concrete type.
 
 ---
 
@@ -159,46 +223,44 @@ Same function call, different data underneath.
 
 Abstraction is about hiding complexity. You use something simple on the outside, and all the complicated stuff is handled internally.
 
-### Service Layer
+### Service Layer Classes (Facade Pattern)
 
-The route handlers don't need to know how data is fetched or processed. They just call a service function:
+Route handlers don't need to know how data is fetched or processed. They just call a service class method:
 
 ```typescript
 // In the route file — simple:
-const stats = await AdminService.getRealtimeStats();
+const stats = await AdminService.getRealtimeAnalytics();
 
-// Inside the service — complicated:
-export async function getRealtimeStats() {
-  const activeBuses = await Heartbeat.aggregate([
-    { $match: { timestamp: { $gte: fiveMinAgo } } },
-    { $group: { _id: "$busId" } },
-  ]);
-  const activeTrips = await Trip.countDocuments({ status: 'active' });
-  const todayRevenue = await Ticket.aggregate([
-    { $match: { issuedAt: { $gte: startOfDay } } },
-    { $group: { _id: null, total: { $sum: "$fareAmount" } } },
-  ]);
-  return { activeBuses: activeBuses.length, activeTrips, todayRevenue };
+// Inside AdminService — complicated:
+export class AdminService {
+  public static async getRealtimeAnalytics() {
+    const heartbeats = await Heartbeat.aggregate([
+      { $match: { timestamp: { $gte: fiveMinAgo } } },
+      { $group: { _id: "$busId" } },
+    ]);
+    // ... complex load calculations, cross-collection joins
+    return { activeBuses, avgSpeed, crowding };
+  }
 }
 ```
 
 The controller doesn't know about aggregation pipelines or date math. It just gets a clean object back.
 
-### React Components
+### Abstract BaseController
 
-On the frontend, each component hides its own complexity:
+The `BaseController` abstract class hides router setup and response formatting:
 
-```jsx
-<StatsOverview />       // handles its own API calls, loading states, number formatting
-<LiveBusFeed />         // manages SSE connection, real-time updates internally
-<NetworkGraphView />    // renders the whole graph, handles zoom/pan
+```typescript
+export abstract class BaseController {
+  protected abstract initializeRoutes(): void;  // "What" to do (abstract)
+
+  protected sendSuccess(res, data, statusCode = 200) {  // "How" to send (concrete)
+    res.status(statusCode).json(data);
+  }
+}
 ```
 
-The dashboard page just places these components. It doesn't care how they work inside.
-
-### API Client
-
-The frontend calls `getFleetBuses()` and gets data back. Behind the scenes, `api.js` handles getting the token, adding headers, making the HTTP request, and parsing the response. The component calling it doesn't deal with any of that.
+Concrete controllers only define their routes. They inherit error handling and response formatting.
 
 ---
 
@@ -206,9 +268,9 @@ The frontend calls `getFleetBuses()` and gets data back. Behind the scenes, `api
 
 | Concept | Where we used it | Quick example |
 |---------|-----------------|---------------|
-| Encapsulation | Models, AuthContext, API client | Bus model bundles data + validation together |
-| Inheritance | Mongoose Document, shared model structure | All models inherit `save()`, `find()` from Document |
-| Polymorphism | Auth middleware, model methods | 5 auth functions with same signature, different logic |
-| Abstraction | Service layer, React components, API client | Service hides complex MongoDB queries |
+| Encapsulation | Service classes, Database Singleton, Models, AuthContext | AdminService hides private helpers, Database has private constructor |
+| Inheritance | BasePersonnel, BaseController, Mongoose Document | Driver and Conductor extend IBasePersonnel |
+| Polymorphism | IAuthStrategy implementations, IObserver implementations | 5 auth strategies with same interface, different logic |
+| Abstraction | Service Facade classes, BaseController abstract class | AdminService.getRealtimeAnalytics() hides complex MongoDB queries |
 
-Basically, even though we're using JavaScript/TypeScript (not Java or C++), these OOP ideas naturally showed up in how we structured the project. Mongoose models act like classes, the service layer abstracts complexity, and the middleware system gives us polymorphism.
+Our project uses TypeScript classes, interfaces, and design patterns throughout — from database connection (Singleton), to real-time streaming (Observer), to authentication (Strategy), to business logic (Facade). The codebase is structured following object-oriented principles at every layer.

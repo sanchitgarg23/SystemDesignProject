@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { connectDB } from './config/db';
+import { Database } from './config/db';
 import ingestRoutes from './routes/ingest.routes';
 import queryRoutes from './routes/query.routes';
 import streamRoutes from './routes/stream.routes';
@@ -34,6 +34,7 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     database: 'mongodb',
+    dbConnected: Database.getInstance().getConnectionStatus(),
   });
 });
 
@@ -66,36 +67,39 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-// Initialize database and start server
+// Initialize database (Singleton Pattern) and start server
 async function start() {
   try {
-    console.log('🔄 Connecting to MongoDB...');
-    await connectDB();
+    console.log('Connecting to MongoDB...');
+
+    // Singleton Pattern: Database.getInstance() ensures only one connection
+    const db = Database.getInstance();
+    await db.connect();
 
     app.listen(PORT, () => {
       console.log('');
-      console.log('✅ New Gov API Server (MongoDB) is running!');
+      console.log('New Gov API Server (MongoDB) is running!');
       console.log('');
-      console.log(`📍 Base URL: http://localhost:${PORT}${API_BASE}`);
-      console.log(`🏥 Health: http://localhost:${PORT}/health`);
+      console.log(`Base URL: http://localhost:${PORT}${API_BASE}`);
+      console.log(`Health: http://localhost:${PORT}/health`);
       console.log('');
-      console.log('📥 Ingest Endpoints (require X-Device-Key):');
+      console.log('Ingest Endpoints (require X-Device-Key):');
       console.log(`   POST ${API_BASE}/heartbeat`);
       console.log(`   POST ${API_BASE}/ticket`);
       console.log(`   POST ${API_BASE}/trip/start`);
       console.log(`   POST ${API_BASE}/trip/end`);
       console.log(`   POST ${API_BASE}/offline-batch`);
       console.log('');
-      console.log('📤 Query Endpoints (require Authorization: Bearer):');
+      console.log('Query Endpoints (require Authorization: Bearer):');
       console.log(`   GET  ${API_BASE}/bus/:bus_id/live`);
       console.log(`   GET  ${API_BASE}/route/:route_id/live-buses`);
       console.log(`   GET  ${API_BASE}/trip/:trip_id/tickets`);
       console.log(`   GET  ${API_BASE}/summary/revenue?date=YYYY-MM-DD`);
       console.log('');
-      console.log('📡 Real-time Streaming:');
+      console.log('Real-time Streaming:');
       console.log(`   GET  ${API_BASE}/stream?route_id=<optional>`);
       console.log('');
-      console.log('📱 Passenger App Endpoints (/app/v1):');
+      console.log('Passenger App Endpoints (/app/v1):');
       console.log('   POST /auth/login');
       console.log('   GET  /stops');
       console.log('   GET  /routes/search?query=...');
@@ -108,7 +112,7 @@ async function start() {
       console.log('   GET  /bookings');
       console.log('   DELETE /booking/:id');
       console.log('');
-      console.log('👨‍✈️ Conductor App Endpoints (/conductor/v1):');
+      console.log('Conductor App Endpoints (/conductor/v1):');
       console.log('   POST /auth/login');
       console.log('   GET  /trip/active');
       console.log('   POST /ticket');
@@ -116,7 +120,7 @@ async function start() {
       console.log('   GET  /trip/tickets');
       console.log('   POST /verify-qr (QR code verification)');
       console.log('');
-      console.log('🏛️  Admin/Gov Endpoints (/admin/v1):');
+      console.log('Admin/Gov Endpoints (/admin/v1):');
       console.log('   GET  /routes');
       console.log('   GET  /analytics/realtime');
       console.log('   GET  /analytics/revenue?date=YYYY-MM-DD');
@@ -129,13 +133,13 @@ async function start() {
       console.log('   GET  /buses/live');
       console.log('   GET  /bookings');
       console.log('');
-      console.log('🔑 Default Credentials:');
+      console.log('Default Credentials:');
       console.log('   ETM Bearer Token: demo_token_12345');
       console.log('   Admin Token: admin_demo_token_12345');
       console.log('');
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 }
